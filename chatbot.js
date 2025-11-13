@@ -1,4 +1,4 @@
-// Complete Chatbot Code - Copy and Replace Everything
+// Complete Updated Chatbot Code - Copy and Replace Everything
 class PromptAssistant {
     constructor() {
         this.trainingData = {
@@ -78,11 +78,11 @@ class PromptAssistant {
             ]
         };
         
-        // Add this line - it tracks the conversation
+        // Track conversation state
         this.conversationState = { step: 0 };
     }
 
-    // === ADD THESE NEW METHODS ===
+    // === IMAGE CREATION METHODS ===
     
     handleImageCreation(userInput) {
         const input = userInput.toLowerCase();
@@ -115,50 +115,7 @@ class PromptAssistant {
             this.conversationState = { step: 0 }; // Reset for next time
             
             return `🎨 **Here's your crafted prompt:**\n"${finalPrompt}"\n\n💡 **Pro tips:**\n• Copy this directly into your AI art tool\n• Adjust specific words to fine-tune results\n• Add --ar 16:9 for widescreen or other parameters\n\nReady to create another?`;
-        }handleVideoCreation(userInput) {
-    const input = userInput.toLowerCase();
-    
-    // Step 1: Get the image description
-    if (this.conversationState.step === 0) {
-        this.conversationState.image = userInput;
-        this.conversationState.step = 1;
-        return "🎬 Great! What type of motion do you want?\n• Camera movement (zoom, pan, dolly)\n• Object animation (floating, rotating, growing)\n• Environmental effects (wind, water flow, particles)\n• Character movement (walking, talking, gestures)";
-    }
-    
-    // Step 2: Get the motion type
-    if (this.conversationState.step === 1) {
-        this.conversationState.motion = userInput;
-        this.conversationState.step = 2;
-        return "📹 Perfect! Now describe the speed and duration:\n• Slow motion, real-time, or time-lapse?\n• Short clip (2-4 seconds) or longer sequence?\n• Smooth and cinematic or energetic and quick?";
-    }
-    
-    // Step 3: Get speed and style
-    if (this.conversationState.step === 2) {
-        this.conversationState.speed = userInput;
-        this.conversationState.step = 3;
-        return "🌟 Almost done! Any specific visual style or effects?\n• Cinematic, raw, stylized, glitch art\n• Transitions (fade, cut, dissolve)\n• Color grading or filter effects\n• Loopable or one-time animation?";
-    }
-    
-    // Step 4: Build final video prompt
-    if (this.conversationState.step === 3) {
-        this.conversationState.style = userInput;
-        const finalPrompt = this.buildFinalVideoPrompt();
-        this.conversationState = { step: 0 }; // Reset
-        
-        return `🎥 **Here's your video prompt:**\n"${finalPrompt}"\n\n💡 **Video Tips:**\n• Use this in RunwayML, Pika Labs, or similar tools\n• Add duration parameters (--length 4s)\n• Specify motion strength if available\n• Consider adding camera angles\n\nReady to animate another image?`;
-    }
-    
-    return "Let's start over. What image would you like to animate?";
-}
-
-buildFinalVideoPrompt() {
-    const image = this.conversationState.image || "your image";
-    const motion = this.conversationState.motion || "smooth movement";
-    const speed = this.conversationState.speed || "cinematic pacing";
-    const style = this.conversationState.style || "professional quality";
-    
-    return `Animate: ${image}, with ${motion}, ${speed}, ${style}, seamless motion, stable camera, professional cinematography`;
-}
+        }
         
         return "Let's start over. What would you like to create?";
     }
@@ -172,17 +129,98 @@ buildFinalVideoPrompt() {
         return `${subject}, ${style}, ${mood}, ${details}, professional composition, award-winning, 4K resolution`;
     }
 
+    // === VIDEO CREATION METHODS ===
+    
+    handleVideoCreation(userInput) {
+        const input = userInput.toLowerCase();
+        
+        // Step 1: Get the image description
+        if (this.conversationState.step === 0) {
+            this.conversationState.image = userInput;
+            this.conversationState.step = 1;
+            return "🎬 Great! What type of motion do you want?\n• Camera movement (zoom, pan, dolly)\n• Object animation (floating, rotating, growing)\n• Environmental effects (wind, water flow, particles)\n• Character movement (walking, talking, gestures)";
+        }
+        
+        // Step 2: Get the motion type
+        if (this.conversationState.step === 1) {
+            this.conversationState.motion = userInput;
+            this.conversationState.step = 2;
+            return "📹 Perfect! Now describe the speed and duration:\n• Slow motion, real-time, or time-lapse?\n• Short clip (2-4 seconds) or longer sequence?\n• Smooth and cinematic or energetic and quick?";
+        }
+        
+        // Step 3: Get speed and style
+        if (this.conversationState.step === 2) {
+            this.conversationState.speed = userInput;
+            this.conversationState.step = 3;
+            return "🌟 Almost done! Any specific visual style or effects?\n• Cinematic, raw, stylized, glitch art\n• Transitions (fade, cut, dissolve)\n• Color grading or filter effects\n• Loopable or one-time animation?";
+        }
+        
+        // Step 4: Build final video prompt
+        if (this.conversationState.step === 3) {
+            this.conversationState.style = userInput;
+            const finalPrompt = this.buildFinalVideoPrompt();
+            this.conversationState = { step: 0 }; // Reset
+            
+            return `🎥 **Here's your video prompt:**\n"${finalPrompt}"\n\n💡 **Video Tips:**\n• Use this in RunwayML, Pika Labs, or similar tools\n• Add duration parameters (--length 4s)\n• Specify motion strength if available\n• Consider adding camera angles\n\nReady to animate another image?`;
+        }
+        
+        return "Let's start over. What image would you like to animate?";
+    }
+
+    buildFinalVideoPrompt() {
+        const image = this.conversationState.image || "your image";
+        const motion = this.conversationState.motion || "smooth movement";
+        const speed = this.conversationState.speed || "cinematic pacing";
+        const style = this.conversationState.style || "professional quality";
+        
+        return `Animate: ${image}, with ${motion}, ${speed}, ${style}, seamless motion, stable camera, professional cinematography`;
+    }
+
+    // === QUICK PROMPTS METHOD ===
+    // This is Step 10 - it gives instant prompts for keywords
+    
+    generateQuickPrompt(userInput) {
+        const quickPrompts = {
+            "fantasy": "A majestic dragon soaring over ancient mountains, fantasy art, dramatic lighting, highly detailed, epic scale, 4K",
+            "cyberpunk": "Cyberpunk city street at night, neon lights reflecting on wet pavement, futuristic architecture, cinematic, moody lighting",
+            "portrait": "Professional portrait of a person with striking features, studio lighting, sharp focus, photorealistic, 8K resolution",
+            "anime": "Cute anime character with colorful hair, studio ghibli style, soft lighting, joyful expression, detailed background",
+            "landscape": "Serene mountain landscape at golden hour, photorealistic, dramatic clouds, peaceful atmosphere, Ansel Adams style",
+            "sci-fi": "Futuristic spaceship interior, clean lines, holographic displays, sci-fi aesthetic, cinematic lighting, detailed",
+            "abstract": "Abstract geometric patterns, vibrant colors, modern art, clean composition, bold shapes, contemporary design"
+        };
+        
+        // Check if user typed any of the keywords
+        const input = userInput.toLowerCase();
+        for (const [key, prompt] of Object.entries(quickPrompts)) {
+            if (input.includes(key)) {
+                return `🎨 **Quick ${key} prompt:**\n"${prompt}"\n\nWant to customize this or try another style?`;
+            }
+        }
+        
+        return null; // No quick prompt found
+    }
+
+    // === MAIN RESPONSE HANDLER ===
+    
     findBestResponse(userInput) {
         const input = userInput.toLowerCase().trim();
         
         // If we're already in a conversation, continue it
         if (this.conversationState.step > 0) {
-            return this.handleImageCreation(userInput);
-        }// Start video creation flow
-if (intent.tag === 'image_to_video_help') {
-    this.conversationState.step = 0;
-    return this.handleVideoCreation(input);
-}
+            // Check if we're in image or video flow
+            if (this.conversationState.hasOwnProperty('subject')) {
+                return this.handleImageCreation(userInput);
+            } else {
+                return this.handleVideoCreation(userInput);
+            }
+        }
+        
+        // Step 10: Check for quick prompts first (like "fantasy", "cyberpunk")
+        const quickPrompt = this.generateQuickPrompt(input);
+        if (quickPrompt) {
+            return quickPrompt;
+        }
         
         // Reset for new conversations
         this.conversationState = { step: 0 };
@@ -211,7 +249,15 @@ if (intent.tag === 'image_to_video_help') {
                     // Start image creation flow
                     if (intent.tag === 'text_to_image_help') {
                         this.conversationState.step = 0;
+                        this.conversationState.subject = ""; // Start image flow
                         return this.handleImageCreation(input);
+                    }
+                    
+                    // Start video creation flow
+                    if (intent.tag === 'image_to_video_help') {
+                        this.conversationState.step = 0;
+                        this.conversationState.image = ""; // Start video flow
+                        return this.handleVideoCreation(input);
                     }
                     
                     return response;
@@ -220,7 +266,7 @@ if (intent.tag === 'image_to_video_help') {
         }
         
         // Default response
-        return "I'm here to help with AI art prompts! Try:\n• 'Create an image of a dragon'\n• 'Make a video from an image' \n• 'Show me style examples'\n• 'Help with Midjourney parameters'\n\nWhat would you like to explore?";
+        return "I'm here to help with AI art prompts! Try:\n• 'Create an image' (step-by-step builder)\n• 'Make a video from image' (video creator)\n• 'Fantasy' or 'Cyberpunk' (instant prompts)\n• 'Show examples' (see prompt examples)\n\nWhat would you like to explore?";
     }
 
     async processMessage(userMessage) {
