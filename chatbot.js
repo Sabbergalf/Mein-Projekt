@@ -115,7 +115,50 @@ class PromptAssistant {
             this.conversationState = { step: 0 }; // Reset for next time
             
             return `🎨 **Here's your crafted prompt:**\n"${finalPrompt}"\n\n💡 **Pro tips:**\n• Copy this directly into your AI art tool\n• Adjust specific words to fine-tune results\n• Add --ar 16:9 for widescreen or other parameters\n\nReady to create another?`;
-        }
+        }handleVideoCreation(userInput) {
+    const input = userInput.toLowerCase();
+    
+    // Step 1: Get the image description
+    if (this.conversationState.step === 0) {
+        this.conversationState.image = userInput;
+        this.conversationState.step = 1;
+        return "🎬 Great! What type of motion do you want?\n• Camera movement (zoom, pan, dolly)\n• Object animation (floating, rotating, growing)\n• Environmental effects (wind, water flow, particles)\n• Character movement (walking, talking, gestures)";
+    }
+    
+    // Step 2: Get the motion type
+    if (this.conversationState.step === 1) {
+        this.conversationState.motion = userInput;
+        this.conversationState.step = 2;
+        return "📹 Perfect! Now describe the speed and duration:\n• Slow motion, real-time, or time-lapse?\n• Short clip (2-4 seconds) or longer sequence?\n• Smooth and cinematic or energetic and quick?";
+    }
+    
+    // Step 3: Get speed and style
+    if (this.conversationState.step === 2) {
+        this.conversationState.speed = userInput;
+        this.conversationState.step = 3;
+        return "🌟 Almost done! Any specific visual style or effects?\n• Cinematic, raw, stylized, glitch art\n• Transitions (fade, cut, dissolve)\n• Color grading or filter effects\n• Loopable or one-time animation?";
+    }
+    
+    // Step 4: Build final video prompt
+    if (this.conversationState.step === 3) {
+        this.conversationState.style = userInput;
+        const finalPrompt = this.buildFinalVideoPrompt();
+        this.conversationState = { step: 0 }; // Reset
+        
+        return `🎥 **Here's your video prompt:**\n"${finalPrompt}"\n\n💡 **Video Tips:**\n• Use this in RunwayML, Pika Labs, or similar tools\n• Add duration parameters (--length 4s)\n• Specify motion strength if available\n• Consider adding camera angles\n\nReady to animate another image?`;
+    }
+    
+    return "Let's start over. What image would you like to animate?";
+}
+
+buildFinalVideoPrompt() {
+    const image = this.conversationState.image || "your image";
+    const motion = this.conversationState.motion || "smooth movement";
+    const speed = this.conversationState.speed || "cinematic pacing";
+    const style = this.conversationState.style || "professional quality";
+    
+    return `Animate: ${image}, with ${motion}, ${speed}, ${style}, seamless motion, stable camera, professional cinematography`;
+}
         
         return "Let's start over. What would you like to create?";
     }
@@ -135,7 +178,11 @@ class PromptAssistant {
         // If we're already in a conversation, continue it
         if (this.conversationState.step > 0) {
             return this.handleImageCreation(userInput);
-        }
+        }// Start video creation flow
+if (intent.tag === 'image_to_video_help') {
+    this.conversationState.step = 0;
+    return this.handleVideoCreation(input);
+}
         
         // Reset for new conversations
         this.conversationState = { step: 0 };
