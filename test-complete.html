@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chatbot Test - Complete</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 40px; 
+            background: #f5f5f5;
+        }
+        .chat-container { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .message { 
+            margin: 10px 0; 
+            padding: 10px 15px; 
+            border-radius: 15px; 
+            max-width: 80%;
+        }
+        .user { 
+            background: #007bff; 
+            color: white; 
+            margin-left: auto;
+            text-align: right;
+        }
+        .bot { 
+            background: #e9ecef; 
+            color: black;
+        }
+        #chat-messages {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .input-container {
+            display: flex;
+            gap: 10px;
+        }
+        input { 
+            flex: 1; 
+            padding: 12px; 
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button { 
+            padding: 12px 24px; 
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <h2>🤖 Prompt Assistant Test</h2>
+        <div id="chat-messages">
+            <div class="message bot">
+                Hello! I'm your AI prompt assistant. Try saying "hello" or "I want to create an image"
+            </div>
+        </div>
+        <div class="input-container">
+            <input type="text" id="user-input" placeholder="Type your message here...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        // Simple Chatbot Class
+        class PromptAssistant {
+            constructor() {
+                this.trainingData = {
+                    "intents": [
+                        {
+                            "tag": "greeting",
+                            "patterns": ["hello", "hi", "hey", "good morning", "good afternoon"],
+                            "responses": [
+                                "Hello! I'm your AI prompt assistant. Ready to create some amazing AI art?",
+                                "Hi there! I specialize in text-to-image and image-to-video prompts.",
+                                "Hey! Let's make some creative magic happen!"
+                            ]
+                        },
+                        {
+                            "tag": "text_to_image_help",
+                            "patterns": ["create image", "make image", "text to image", "generate image", "image prompt"],
+                            "responses": [
+                                "I'd love to help you create an image prompt! What's the main subject?",
+                                "Great! Let's craft a prompt. What are you imagining?",
+                                "Image prompt creation - my favorite! What's your main subject?"
+                            ]
+                        },
+                        {
+                            "tag": "image_to_video_help", 
+                            "patterns": ["turn image into video", "make video from image", "image to video", "animate image"],
+                            "responses": [
+                                "Exciting! What kind of motion do you want?",
+                                "Let's bring your image to life! What should move?",
+                                "Video creation time! Describe the movement you want."
+                            ]
+                        },
+                        {
+                            "tag": "farewell",
+                            "patterns": ["bye", "goodbye", "see you", "thanks", "thank you"],
+                            "responses": [
+                                "You're welcome! Happy creating!",
+                                "Goodbye! Can't wait to see what you create!",
+                                "Thanks for chatting! See you next time!"
+                            ]
+                        }
+                    ]
+                };
+            }
+
+            findBestResponse(userInput) {
+                const input = userInput.toLowerCase().trim();
+                console.log("User said:", input); // Debug log
+                
+                // Check each intent
+                for (let intent of this.trainingData.intents) {
+                    for (let pattern of intent.patterns) {
+                        if (input.includes(pattern.toLowerCase())) {
+                            const randomIndex = Math.floor(Math.random() * intent.responses.length);
+                            const response = intent.responses[randomIndex];
+                            console.log("Found response:", response); // Debug log
+                            return response;
+                        }
+                    }
+                }
+                
+                // Default response
+                return "I'm here to help with AI art prompts! Try asking about image creation or video animation.";
+            }
+
+            async processMessage(userMessage) {
+                return this.findBestResponse(userMessage);
+            }
+        }
+
+        // Initialize chatbot
+        const assistant = new PromptAssistant();
+
+        // Chat functions
+        function sendMessage() {
+            const inputElement = document.getElementById('user-input');
+            const message = inputElement.value.trim();
+            
+            if (message) {
+                console.log("Sending message:", message); // Debug log
+                
+                // Display user message
+                displayMessage(message, 'user');
+                inputElement.value = '';
+                
+                // Get and display bot response
+                setTimeout(async () => {
+                    try {
+                        const response = await assistant.processMessage(message);
+                        console.log("Bot response:", response); // Debug log
+                        displayMessage(response, 'bot');
+                    } catch (error) {
+                        console.error("Error:", error);
+                        displayMessage("Sorry, I encountered an error. Please try again.", 'bot');
+                    }
+                }, 500);
+            }
+        }
+        
+        function displayMessage(text, sender) {
+            const messagesDiv = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.textContent = text;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+        
+        // Allow pressing Enter to send
+        document.getElementById('user-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
